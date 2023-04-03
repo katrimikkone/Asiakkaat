@@ -90,13 +90,15 @@ public class Dao {
 	
 	public ArrayList<Asiakas> getAllItems(String searchStr){
 		ArrayList<Asiakas> asiakkaat = new ArrayList<Asiakas>();
-		sql= "SELECT * FROM asiakkaat WHERE etunimi LIKE ? OR sukunimi LIKE ? ORDER BY sukunimi";
+		sql= "SELECT * FROM asiakkaat WHERE etunimi LIKE ? OR sukunimi LIKE ? OR puhelin LIKE ? OR sposti LIKE ? ORDER BY sukunimi";
 		try {
 			con=yhdista();
 			if(con!=null) {
 				stmtPrep=con.prepareStatement(sql);
 				stmtPrep.setString(1,"%" + searchStr + "%");
 				stmtPrep.setString(2,"%" + searchStr + "%");
+				stmtPrep.setString(3,"%" + searchStr + "%");
+				stmtPrep.setString(4,"%" + searchStr + "%");
 				rs=stmtPrep.executeQuery();
 				if(rs!=null) {
 					while(rs.next()) {
