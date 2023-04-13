@@ -19,62 +19,89 @@ import model.dao.Dao;
 @WebServlet("/asiakkaat/*")
 public class Asiakkaat extends HttpServlet {
 	private static final long serialVersionUID = 1L;
- 
-    public Asiakkaat() {
-       System.out.println("Asiakkaat.Asiakkaat()");
-       
-    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public Asiakkaat() {
+		System.out.println("Asiakkaat.Asiakkaat()");
+
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		System.out.println("Asiakkaat.doGet()");
 		String hakusana = request.getParameter("hakusana");
+		String id = request.getParameter("id");// saa parametrina muutettavan id:n
+		System.out.println(id);
 		Dao dao = new Dao();
 		ArrayList<Asiakas> asiakkaat;
-		String strJSON ="";
-
-		if(hakusana!=null) {
-			if(!hakusana.equals("")) {//jos hakusana ei ole tyhjä
+		String strJSON = "";
+		if (hakusana != null) {
+			if (!hakusana.equals("")) {// jos hakusana ei ole tyhjä
 				asiakkaat = dao.getAllItems(hakusana);
-			}else {
+			} else {
 				asiakkaat = dao.getAllItems();
 			}
-			strJSON = new Gson().toJson(asiakkaat); //muuttaa haun json string objektiksi, ei selaimeen
+			strJSON = new Gson().toJson(asiakkaat); // muuttaa haun json string objektiksi, ei selaimeen
+		} else if (id != null) {
+			int asiakas_id = Integer.parseInt(id);
+			Asiakas asiakas = dao.getItem(asiakas_id);
+			strJSON = new Gson().toJson(asiakas);
+		}else {
+			asiakkaat = dao.getAllItems();
+			strJSON = new Gson().toJson(asiakkaat);
 		}
 
 		response.setContentType("application/json; charset=UTF-8");
-		PrintWriter out = response.getWriter(); //json -> selaimeen
-		out.println(strJSON); //tämä backend minkä frontti lukee
+		PrintWriter out = response.getWriter(); // json -> selaimeen
+		out.println(strJSON); // tämä backend minkä frontti lukee
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		System.out.println("Asiakkaat.doPost()");
 		String strJSONInput = request.getReader().lines().collect(Collectors.joining());
-		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);//Gson generoi auton Asiakas modelin perusteella niiden tietojen mukaan mitä strJSONInputssa on
-		//System.out.println(asiakas);
+		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);// Gson generoi auton Asiakas modelin
+																			// perusteella niiden tietojen mukaan mitä
+																			// strJSONInputssa on
+		// System.out.println(asiakas);
 		Dao dao = new Dao();
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-		if(dao.addItem(asiakas)) {
+		if (dao.addItem(asiakas)) {
 			out.println("{\"response\":1}");
-		}else {
+		} else {
 			out.println("{\"response\":0}");
 		}
 	}
 
-	protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	// Tietojen muuttaminen
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		System.out.println("Asiakkaat.doPut()");
-	}
-	//Tietojen poistaminen
-	protected void doDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Asiakkaat.doDelete()");
-		int id = Integer.parseInt(request.getParameter("id"));//tämä id tulee kutsun mukana merkkimuodossa, siksi parseroidaan
-		Dao dao = new Dao();
+		String strJSONInput = request.getReader().lines().collect(Collectors.joining());
+		System.out.println("PUT strJSONInput " + strJSONInput); //täällä id on undefined
+		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);
+		System.out.println(asiakas);	
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-		if(dao.removeItem(id)) {
-			out.println("{\"response\":1}"); //onnistui
-		}else {
-			out.println("{\"response\":0}"); //epäonnistui
+		Dao dao = new Dao();
+		if (dao.changeItem(asiakas)) {
+			out.println("{\"response\":1}");
+		} else {
+			out.println("{\"response\":0}");
+		}
+	}
+
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		System.out.println("Asiakkaat.doDelete()");
+		int asiakas_id = Integer.parseInt(request.getParameter("asiakas_id"));
+		Dao dao = new Dao();
+		response.setContentType("application/json");
+		PrintWriter out = response.getWriter();
+		if (dao.removeItem(asiakas_id)) { // metodi palauttaa true/false
+			out.println("{\"response\":1}"); // Asiakkaan poisto onnistui {"response":1}
+		} else {
+			out.println("{\"response\":0}"); // Asiakkaan poisto ep�onnistui {"response":0}
 		}
 	}
 
