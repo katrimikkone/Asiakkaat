@@ -25,12 +25,11 @@ public class Asiakkaat extends HttpServlet {
 
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		System.out.println("Asiakkaat.doGet()");
 		String hakusana = request.getParameter("hakusana");
-		String id = request.getParameter("id");// saa parametrina muutettavan id:n
-		System.out.println(id);
+		String asiakas_id = request.getParameter("id");// saa parametrina muutettavan id:n
+		System.out.println("Do get as id: "+asiakas_id);
 		Dao dao = new Dao();
 		ArrayList<Asiakas> asiakkaat;
 		String strJSON = "";
@@ -41,9 +40,8 @@ public class Asiakkaat extends HttpServlet {
 				asiakkaat = dao.getAllItems();
 			}
 			strJSON = new Gson().toJson(asiakkaat); // muuttaa haun json string objektiksi, ei selaimeen
-		} else if (id != null) {
-			int asiakas_id = Integer.parseInt(id);
-			Asiakas asiakas = dao.getItem(asiakas_id);
+		} else if (asiakas_id != null) {
+			Asiakas asiakas = dao.getItem(Integer.parseInt(asiakas_id));
 			strJSON = new Gson().toJson(asiakas);
 		}else {
 			asiakkaat = dao.getAllItems();
@@ -55,8 +53,7 @@ public class Asiakkaat extends HttpServlet {
 		out.println(strJSON); // tämä backend minkä frontti lukee
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		System.out.println("Asiakkaat.doPost()");
 		String strJSONInput = request.getReader().lines().collect(Collectors.joining());
 		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);// Gson generoi auton Asiakas modelin
@@ -74,20 +71,20 @@ public class Asiakkaat extends HttpServlet {
 	}
 
 	// Tietojen muuttaminen
-	protected void doPut(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		System.out.println("Asiakkaat.doPut()");
+		//Luetaan JSON-tiedot POST-pyynn�n bodysta ja luodaan niiden perusteella uusi asiakas		
 		String strJSONInput = request.getReader().lines().collect(Collectors.joining());
-		System.out.println("PUT strJSONInput " + strJSONInput); //täällä id on undefined
-		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);
-		System.out.println(asiakas);	
+		//System.out.println(strJSONInput);
+		Asiakas asiakas = new Gson().fromJson(strJSONInput, Asiakas.class);	
+		//System.out.println(asiakas);
+		Dao dao = new Dao();
 		response.setContentType("application/json; charset=UTF-8");
 		PrintWriter out = response.getWriter();
-		Dao dao = new Dao();
-		if (dao.changeItem(asiakas)) {
-			out.println("{\"response\":1}");
-		} else {
-			out.println("{\"response\":0}");
+		if(dao.changeItem(asiakas)) {
+			out.println("{\"response\":1}");  //Auton lis��minen onnistui {"response":1}
+		}else {
+			out.println("{\"response\":0}");  //Auton lis��minen ep�onnistui {"response":0}
 		}
 	}
 

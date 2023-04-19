@@ -1,3 +1,4 @@
+<%@include file="header.jsp" %>
 <%@ page language="java" contentType="text/html; charset=UTF-8 "
     pageEncoding="UTF-8"%>
 <!DOCTYPE html>
@@ -30,11 +31,11 @@
 					<td><input type="text" name="sukunimi" id="sukunimi"></td>
 					<td><input type="text" name="puhelin" id="puhelin"></td>
 					<td><input type="text" name="sposti" id="sposti"></td>
-					<td><input type="button" id="tallenna" value="Hyväksy" onclick="tutkiJaPaivita()"></td>				
+					<td><input type="button" value="Hyväksy" onclick="tutkiJaPaivita()"></td>				
 				</tr>			
 			</tbody>
 		</table> 
-		<input type="hidden" name="id" id="id"> <!--kantaa id:tä , mistä arvo tulee tänne?-->
+		<input type="hidden" name="asiakas_id" id="asiakas_id"> <!--kantaa id:tä , mistä arvo tulee tänne?-->
 	</form>
 	<span id="ilmo"></span>
 </body>

@@ -70,7 +70,53 @@ function poistaAsiakas(asiakas_id, nimi){
    	.catch(errorText => console.error("Fetch failed: " + errorText));
 }
 
+function haeAsiakas() {		
+    let url = "asiakkaat?id=" + requestURLParam("id"); //requestURLParam() on funktio, jolla voidaan hakea urlista arvo avaimen perusteella. Löytyy main.js -tiedostosta 	
+	//console.log(url);
+    let requestOptions = {
+        method: "GET",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8" }       
+    };    
+    fetch(url, requestOptions)
+    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi
+   	.then(response => {
+   		//console.log(response);
+   		document.getElementById("asiakas_id").value=response.asiakas_id;
+   		document.getElementById("etunimi").value=response.etunimi;
+   		document.getElementById("sukunimi").value=response.sukunimi;
+   		document.getElementById("puhelin").value=response.puhelin;
+   		document.getElementById("sposti").value=response.sposti;
+   	}) 
+   	.catch(errorText => console.error("Fetch failed: " + errorText));
+}
 
+function paivitaTiedot(){
+	let formData = serialize_form(document.lomake); //Haetaan tiedot lomakkeelta ja muutetaan JSON-stringiksi
+	//formData=encodeURI(formData);
+	console.log(formData);
+	let url = "asiakkaat";    
+    let requestOptions = {
+        method: "PUT", //Lisätään asiakas
+        headers: { "Content-Type": "application/json; charset=UTF-8" },  //charset=UTF-8 hoitaa skandinaaviset merkit oikein backendiin
+    	body: formData
+    };    
+    fetch(url, requestOptions)
+    .then(response => response.json())//Muutetaan vastausteksti JSON-objektiksi
+   	.then(responseObj => {	
+   		//console.log(responseObj);
+   		if(responseObj.response==0){
+   			document.getElementById("ilmo").innerHTML = "Asiakkaan päivitys epäonnistui.";	
+        }else if(responseObj.response==1){ 
+        	document.getElementById("ilmo").innerHTML = "Asiakkaan päivitys onnistui.";
+			document.lomake.reset(); //Tyhjennetään lisäämisen lomake		        	
+		}
+		setTimeout(function(){ document.getElementById("ilmo").innerHTML=""; }, 3000);
+   	})
+   	.catch(errorText => console.error("Fetch failed: " + errorText));
+}
+
+
+/*
 function haeAsiakas() {		
     let url = "asiakkaat?id=" +requestURLParam("id"); //requestURLParam() on funktio, jolla voidaan hakea urlista arvo avaimen perusteella. Löytyy main.js -tiedostosta 	
 	console.log(url);
@@ -112,5 +158,5 @@ function paivitaTiedot(){
 		//setTimeout(function() { document.getElementById("ilmo").innerHTML=""; }, 3000);
 	})
 	.catch(errorText => console.error("Fetch failed: " + errorText));
-}
+}*/
 	

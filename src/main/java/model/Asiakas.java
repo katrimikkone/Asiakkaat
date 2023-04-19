@@ -4,8 +4,9 @@ public class Asiakas {
 	private int asiakas_id;
 	private String etunimi, sukunimi, puhelin, sposti;
 	public Asiakas() {
-	
+		
 	}
+
 	public Asiakas(int asiakas_id, String etunimi, String sukunimi, String puhelin, String sposti) {
 		super();
 		this.asiakas_id = asiakas_id;
@@ -14,6 +15,7 @@ public class Asiakas {
 		this.puhelin = puhelin;
 		this.sposti = sposti;
 	}
+
 	public int getAsiakas_id() {
 		return asiakas_id;
 	}
